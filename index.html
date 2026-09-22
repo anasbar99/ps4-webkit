@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en" manifest="cache.manifest">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>PS4 Jailbreak by Sanchezz</title>
+
+    <!-- Optional modern font.
+         UI tetap berjalan jika font gagal dimuat. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
+    <script src="https://kit.fontawesome.com/..."></script>
+
+    <link rel="stylesheet" href="includes/style.css" />
+  </head>
+
+  <body>
+    <div class="app">
+      <!-- =========================================
+         FULL BACKGROUND
+    ========================================== -->
+
+      <div class="background">
+        <img src="includes/bungu.png" class="background-image" alt="" aria-hidden="true" />
+
+        <div class="background-dark"></div>
+
+        <div class="background-blue"></div>
+
+        <div class="scanlines"></div>
+      </div>
+
+      <!-- =========================================
+         MAIN CONTENT
+    ========================================== -->
+
+      <main class="panel">
+        <!-- HEADER -->
+
+        <header class="header">
+          <div class="eyebrow">PLAYSTATION 4 WEBKIT</div>
+
+          <h1>
+            PS4
+            <span>JAILBREAK</span>
+          </h1>
+
+          <div class="author">by <strong>Sanchezz Aja</strong></div>
+        </header>
+
+        <!-- =====================================
+             KERNEL SELECTOR
+        ====================================== -->
+
+        <div id="kernel-options" class="kernel-selector">
+          <label class="kernel-option">
+            <input type="radio" name="kernel" id="netctrl-exploit" value="netctrl" />
+
+            <span class="radio"></span>
+
+            <span class="kernel-name"> NetCtrl </span>
+          </label>
+
+          <label class="kernel-option active">
+            <input type="radio" name="kernel" id="lapse-exploit" value="lapse" checked />
+
+            <span class="radio"></span>
+
+            <span class="kernel-name"> Lapse </span>
+          </label>
+        </div>
+
+        <!-- =====================================
+             CONSOLE
+        ====================================== -->
+
+        <section class="console-card">
+          <div class="console-header">
+            <div class="console-title">
+              <span class="terminal-icon"> &gt;_ </span>
+
+              <div>
+                <strong> EXPLOIT CONSOLE </strong>
+
+                <small> PS4 WebKit output </small>
+              </div>
+            </div>
+
+            <div id="exploit-status" class="status ready">SIAP!!!</div>
+          </div>
+
+          <pre id="console">Ready. Awaiting execution...</pre>
+        </section>
+
+        <!-- =====================================
+             JAILBREAK
+        ====================================== -->
+
+        <button id="jeilbrek" class="jailbreak-button" type="button">
+          <span class="bolt"> ⚡ </span>
+
+          <span> JAILBREAK </span>
+        </button>
+
+        <!-- =====================================
+             AUTO JAILBREAK
+        ====================================== -->
+
+        <label class="auto-jailbreak" for="autoJbInput">
+          <span class="auto-icon"> ⚡ </span>
+
+          <span class="auto-content">
+            <span id="autoJbLabel" class="auto-title"> Auto Jailbreak </span>
+
+            <span class="auto-description"> Automatically execute exploit </span>
+          </span>
+
+          <input id="autoJbInput" type="checkbox" />
+
+          <span class="toggle"></span>
+        </label>
+
+        <!-- =====================================
+             HIDDEN COMPATIBILITY ELEMENT
+        ====================================== -->
+
+        <div id="UA" aria-hidden="true" style="display: none"></div>
+
+        <!-- FOOTER -->
+
+        <footer>
+          <span>PS4 WEBKIT</span>
+
+          <i></i>
+
+          <span>SANCHEZZ</span>
+
+          <i></i>
+
+          <span>GAMING</span>
+        </footer>
+      </main>
+    </div>
+
+    <!-- =========================================
+     ORIGINAL EXPLOIT ENGINE
+     DO NOT MOVE BEFORE UI INITIALIZATION
+========================================== -->
+
+    <script src="src/main.js"></script>
+
+    <script src="includes/script.js"></script>
+  </body>
+</html>
