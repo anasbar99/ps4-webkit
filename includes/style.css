@@ -1,5 +1,45 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&display=swap'); */
+@font-face {
+  font-family: 'Orbitron';
+  src: url('./fonts/Orbitron-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
 
+@font-face {
+  font-family: 'Orbitron';
+  src: url('./fonts/Orbitron-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Orbitron';
+  src: url('./fonts/Orbitron-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Orbitron';
+  src: url('./fonts/Orbitron-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Orbitron';
+  src: url('./fonts/Orbitron-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Orbitron';
+  src: url('./fonts/Orbitron-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
 /* =========================================================
    RESET
    ========================================================= */
@@ -14,11 +54,8 @@ html,
 body {
   width: 100%;
   height: 100%;
-
   overflow: hidden;
-
   background: #000;
-
   font-family: 'Orbitron', Arial, sans-serif;
 }
 
@@ -28,10 +65,8 @@ body {
 
 .app {
   position: relative;
-
   width: 100vw;
   height: 100vh;
-
   overflow: hidden;
 }
 
@@ -41,16 +76,11 @@ body {
 
 .background {
   position: fixed;
-
   inset: 0;
-
   width: 100vw;
   height: 100vh;
-
   overflow: hidden;
-
   z-index: 0;
-
   background: #000;
 }
 
@@ -105,87 +135,54 @@ body {
 
 .panel {
   position: relative;
-
   z-index: 10;
-
   width: 52%;
-
   height: 100vh;
-
   margin-left: auto;
-
   /*
         Header dinaikkan ke atas.
         Padding bawah kecil supaya console
         mendapat ruang sebanyak mungkin.
     */
-
   padding: 2vh 4vw 1.5vh 3vw;
-
   display: flex;
-
   flex-direction: column;
-
   align-items: stretch;
-
   justify-content: flex-start;
-
   background: transparent !important;
-
   border: none !important;
-
   box-shadow: none !important;
 }
-
 /* =========================================================
    HEADER
    ========================================================= */
-
 .header {
   width: 100%;
-
   flex-shrink: 0;
-
   text-align: center;
-
   margin-bottom: 8px;
 }
 
 .eyebrow {
   margin-bottom: 3px;
-
   color: rgba(220, 235, 250, 0.85);
-
   font-family: 'Orbitron', Arial, sans-serif;
-
   font-size: 10px;
-
   font-weight: 600;
-
   letter-spacing: 4px;
-
   line-height: 1.2;
-
   text-shadow: 0 2px 7px rgba(0, 0, 0, 0.95);
 }
 
 .header h1 {
   margin: 0;
-
   color: #ffffff;
-
   font-family: 'Orbitron', Arial, sans-serif;
-
   font-size: clamp(38px, 4vw, 62px);
-
   font-weight: 900;
-
   font-style: italic;
-
   letter-spacing: -2px;
-
   line-height: 0.95;
-
   text-shadow:
     0 3px 10px rgba(0, 0, 0, 0.95),
     0 6px 20px rgba(0, 0, 0, 0.8);
@@ -193,7 +190,6 @@ body {
 
 .header h1 span {
   color: #1685ff;
-
   text-shadow:
     0 0 12px rgba(0, 130, 255, 0.65),
     0 4px 15px rgba(0, 0, 0, 0.9);
@@ -201,265 +197,171 @@ body {
 
 .author {
   margin-top: 4px;
-
   color: rgba(255, 255, 255, 0.85);
-
   font-family: 'Orbitron', Arial, sans-serif;
-
-  font-size: 10px;
-
+  font-size: 20px;
   font-style: italic;
-
   line-height: 1.2;
-
   text-shadow: 0 2px 7px rgba(0, 0, 0, 0.95);
 }
 
 .author strong {
   color: #ffffff;
-
   font-weight: 800;
 }
-
 /* =========================================================
    KERNEL SELECTOR
    ========================================================= */
-
 .kernel-selector {
   width: 100%;
-
   display: flex;
-
   justify-content: center;
-
   align-items: center;
-
   gap: 8px;
-
   margin-bottom: 9px;
-
   flex-shrink: 0;
 }
 
 .kernel-option {
   position: relative;
-
   min-width: 100px;
-
   height: 32px;
-
   padding: 0 14px;
-
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
   gap: 7px;
-
   border: 1px solid rgba(100, 160, 220, 0.35);
-
   border-radius: 7px;
-
   background: rgba(5, 15, 25, 0.72);
-
   color: rgba(220, 230, 240, 0.72);
-
   font-family: Arial, sans-serif;
-
   font-size: 10px;
-
   font-weight: 600;
-
   cursor: pointer;
-
   transition:
     border-color 0.2s ease,
     background 0.2s ease,
     color 0.2s ease;
-
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
 }
 
 .kernel-option:hover {
   border-color: #1685ff;
-
   color: #ffffff;
-
   background: rgba(10, 35, 60, 0.85);
 }
-
 /*
     Radio asli disembunyikan.
 */
-
 .kernel-option input {
   position: absolute;
-
   opacity: 0;
-
   width: 1px;
   height: 1px;
 }
-
 /*
     Radio custom
 */
-
 .radio {
   width: 10px;
   height: 10px;
-
   flex-shrink: 0;
-
   border-radius: 50%;
-
   border: 2px solid #46576a;
-
   background: #263443;
 }
-
 /*
     Active selector
 */
-
 .kernel-option.active {
   border-color: #1685ff;
-
   background: rgba(5, 30, 60, 0.82);
-
   color: #ffffff;
-
   box-shadow: 0 0 10px rgba(0, 120, 255, 0.08);
 }
 
 .kernel-option.active .radio {
   border-color: #1685ff;
-
   background: #1685ff;
-
   box-shadow: 0 0 8px rgba(0, 130, 255, 0.65);
 }
-
 /* =========================================================
    CONSOLE CARD
    ========================================================= */
-
 .console-card {
   width: 100%;
-
   /*
         INI KUNCI UTAMA.
 
         Console mengambil seluruh ruang kosong
         yang tersisa di panel.
     */
-
   flex: 1;
-
   min-height: 0;
-
   display: flex;
-
   flex-direction: column;
-
   margin-bottom: 9px;
-
   border: 1px solid rgba(40, 130, 200, 0.7);
-
   border-radius: 8px;
-
   overflow: hidden;
-
   background: rgba(0, 5, 9, 0.9);
-
   box-shadow:
     0 8px 30px rgba(0, 0, 0, 0.35),
     inset 0 0 30px rgba(0, 0, 0, 0.45);
 }
-
 /* =========================================================
    CONSOLE HEADER
    ========================================================= */
-
 .console-header {
   width: 100%;
-
   min-height: 44px;
-
   height: 44px;
-
   flex-shrink: 0;
-
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   padding: 0 13px;
-
   background: rgba(7, 17, 28, 0.94);
-
   border-bottom: 1px solid rgba(40, 130, 200, 0.55);
 }
 
 .console-title {
   display: flex;
-
   align-items: center;
-
   gap: 9px;
-
   min-width: 0;
 }
 
 .terminal-icon {
   color: #1685ff;
-
   font-family: Consolas, monospace;
-
   font-size: 17px;
-
   font-weight: 900;
-
   white-space: nowrap;
 }
 
 .console-title div {
   display: flex;
-
   flex-direction: column;
-
   justify-content: center;
-
   min-width: 0;
 }
 
 .console-title strong {
   color: #ffffff;
-
   font-family: 'Orbitron', Arial, sans-serif;
-
-  font-size: 10px;
-
+  font-size: 15px;
   font-weight: 800;
-
   letter-spacing: 0.7px;
-
-  line-height: 1.1;
+  line-height: 1.3;
 }
 
 .console-title small {
   margin-top: 2px;
-
   color: rgba(150, 175, 200, 0.65);
-
   font-family: Arial, sans-serif;
-
-  font-size: 7px;
-
+  font-size: 12px;
   line-height: 1;
 }
 
@@ -469,23 +371,14 @@ body {
 
 .status {
   flex-shrink: 0;
-
   padding: 5px 10px;
-
   border: 1px solid #00ff9d;
-
   border-radius: 5px;
-
   color: #00ff9d;
-
   font-family: Arial, sans-serif;
-
-  font-size: 8px;
-
+  font-size: 11px;
   font-weight: 800;
-
   letter-spacing: 1px;
-
   background: rgba(0, 50, 35, 0.2);
 }
 
@@ -495,49 +388,29 @@ body {
 
 #console {
   width: 100%;
-
   /*
         Mengisi seluruh tinggi console.
     */
-
   flex: 1;
-
   min-height: 0;
-
   margin: 0;
-
   padding: 17px;
-
   overflow-x: hidden;
-
   overflow-y: auto;
-
   border: none;
-
   outline: none;
-
   background: rgba(0, 5, 9, 0.94);
-
   color: #00ff66;
-
   font-family: Consolas, 'Courier New', monospace;
-
   /*
         TEKS CONSOLE DIPERBESAR
     */
-
   font-size: 16px;
-
   font-weight: 500;
-
   line-height: 1.55;
-
   white-space: pre-wrap;
-
   word-break: break-word;
-
   text-align: left;
-
   text-shadow: 0 0 5px rgba(0, 255, 100, 0.18);
 }
 
@@ -546,7 +419,7 @@ body {
    ========================================================= */
 
 #console::-webkit-scrollbar {
-  width: 8px;
+  width: 4px;
 }
 
 #console::-webkit-scrollbar-track {
@@ -569,49 +442,25 @@ body {
 
 .jailbreak-button {
   width: 100%;
-
-  /*
-        TETAP BESAR KARENA INI TOMBOL UTAMA
-    */
-
   height: 70px;
-
   flex-shrink: 0;
-
   margin: 0 0 9px;
-
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
   gap: 12px;
-
   border: 1px solid rgba(30, 150, 255, 0.75);
-
   border-radius: 9px;
-
   background: linear-gradient(90deg, rgba(15, 100, 220, 0.95), rgba(25, 135, 255, 0.95));
-
   color: #ffffff;
-
   font-family: 'Orbitron', Arial, sans-serif;
-
-  font-size: 27px;
-
+  font-size: 40px;
   font-weight: 900;
-
   font-style: italic;
-
   letter-spacing: 1px;
-
   cursor: pointer;
-
   text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-
   box-shadow: 0 5px 20px rgba(0, 80, 180, 0.2);
-
   transition:
     transform 0.15s ease,
     filter 0.15s ease,
@@ -620,7 +469,6 @@ body {
 
 .jailbreak-button:hover {
   filter: brightness(1.12);
-
   box-shadow: 0 0 25px rgba(0, 130, 255, 0.35);
 }
 
@@ -630,108 +478,77 @@ body {
 
 .jailbreak-button:disabled {
   cursor: not-allowed;
-
   opacity: 0.85;
 }
 
 .bolt {
-  color: #ff8a00;
-
-  font-size: 25px;
-
-  font-style: normal;
-
+  width: 45px;
   text-shadow: 0 0 8px rgba(255, 130, 0, 0.45);
 }
-
 /* =========================================================
    AUTO JAILBREAK
    ========================================================= */
 
 .auto-jailbreak {
   width: 100%;
-
   height: 52px;
-
   flex-shrink: 0;
-
   display: flex;
-
   align-items: center;
-
   padding: 0 12px;
-
   margin: 0;
-
   border: 1px solid rgba(50, 120, 180, 0.4);
-
   border-radius: 8px;
-
   background: rgba(4, 13, 22, 0.76);
-
   cursor: pointer;
 }
 
 .auto-icon {
   width: 30px;
   height: 30px;
-
   flex-shrink: 0;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   margin-right: 9px;
-
   border: 1px solid #1685ff;
-
   border-radius: 5px;
-
   color: #ff8500;
-
   font-size: 15px;
 }
 
 .auto-content {
   flex: 1;
-
   min-width: 0;
-
   display: flex;
-
   flex-direction: column;
-
   justify-content: center;
 }
 
 .auto-title {
   display: block;
-
   color: #ffffff;
-
   font-family: Arial, sans-serif;
-
-  font-size: 10px;
-
+  font-size: 18px;
   font-weight: 700;
-
   line-height: 1.2;
 }
 
 .auto-description {
   display: block;
-
   margin-top: 2px;
-
   color: rgba(150, 175, 200, 0.65);
-
   font-family: Arial, sans-serif;
-
-  font-size: 7px;
-
+  font-size: 13px;
   line-height: 1.1;
+}
+.bolt2 {
+  width: 30px !important;
+  margin: 2px 10px;
+  text-shadow: 0 0 8px rgba(255, 130, 0, 0.45);
+  box-shadow: 0 0 8px rgba(255, 34, 89, 0.45);
+  padding: 2px 2px;
+  border-radius: 5px;
 }
 
 /* =========================================================
@@ -740,9 +557,7 @@ body {
 
 .auto-jailbreak input {
   position: absolute;
-
   opacity: 0;
-
   width: 1px;
   height: 1px;
 }
@@ -753,42 +568,29 @@ body {
 
 .toggle {
   position: relative;
-
   width: 39px;
   height: 21px;
-
   flex-shrink: 0;
-
   border-radius: 20px;
-
   background: #344454;
-
   transition: 0.2s;
 }
 
 .toggle::before {
   content: '';
-
   position: absolute;
-
   width: 15px;
   height: 15px;
-
   top: 3px;
   left: 3px;
-
   border-radius: 50%;
-
   background: #ffffff;
-
   transition: 0.2s;
-
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
 
 .auto-jailbreak input:checked + .toggle {
   background: #1685ff;
-
   box-shadow: 0 0 10px rgba(0, 130, 255, 0.25);
 }
 
@@ -810,36 +612,23 @@ body {
 
 footer {
   width: 100%;
-
   height: 13px;
-
   flex-shrink: 0;
-
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
   gap: 9px;
-
   margin-top: 6px;
-
   color: rgba(130, 155, 180, 0.45);
-
   font-family: 'Orbitron', Arial, sans-serif;
-
   font-size: 6px;
-
   letter-spacing: 2px;
 }
 
 footer i {
   width: 18px;
   height: 1px;
-
   display: block;
-
   background: rgba(120, 150, 180, 0.35);
 }
 
@@ -850,7 +639,6 @@ footer i {
 @media (max-width: 1100px) {
   .panel {
     width: 56%;
-
     padding-left: 3vw;
     padding-right: 3vw;
   }
@@ -865,7 +653,6 @@ footer i {
 
   .jailbreak-button {
     height: 65px;
-
     font-size: 24px;
   }
 }
@@ -877,7 +664,6 @@ footer i {
 @media (max-width: 800px) {
   .panel {
     width: 100%;
-
     padding: 15px 20px 12px;
   }
 
@@ -895,7 +681,6 @@ footer i {
 
   .jailbreak-button {
     height: 62px;
-
     font-size: 22px;
   }
 }
