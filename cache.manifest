@@ -1,22 +1,46 @@
 CACHE MANIFEST
-# PS4 WEBKIT v2
+
+# Version 2
+# Updated: 2026-09-23
 
 CACHE:
 index.html
+
 includes/bungu.png
+
 includes/script.js
 includes/style.css
-src/payload.bin
-src/lapse.js
-src/loader.js
+
+# Icons
+includes/icons/automation.png
+includes/icons/thunder.png
+
+# Orbitron Fonts
+includes/fonts/Orbitron-Regular.ttf
+includes/fonts/Orbitron-Medium.ttf
+includes/fonts/Orbitron-SemiBold.ttf
+includes/fonts/Orbitron-Bold.ttf
+includes/fonts/Orbitron-ExtraBold.ttf
+includes/fonts/Orbitron-Black.ttf
+
+# Exploit files
 src/main.js
-src/misc.js
+src/lapse.js
 src/netctrl.js
+src/loader.js
+src/misc.js
 src/worker.js
 src/workers.js
+
+# PS4
 src/ps4/constants.js
 src/ps4/kernel.js
 src/ps4/userland.js
+
+# Payload
+src/payload.bin
+
+# Kernel patches
 src/ps4/patches/1000.bin
 src/ps4/patches/1050.bin
 src/ps4/patches/1100.bin
