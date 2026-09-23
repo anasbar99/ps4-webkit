@@ -1,6 +1,8 @@
 let timerId = null;
 let autoStarted = false;
 let exploitUiRunning = false;
+let pageReadyForAuto = false;
+const AUTO_SETTLE_DELAY_MS = 5000;
 
 const label = document.getElementById('autoJbLabel');
 const checkbox = document.getElementById('autoJbInput');
@@ -145,6 +147,16 @@ function jailbreakCountdown() {
   autoStarted = true;
   stopInterval();
 
+  if (!pageReadyForAuto) {
+    if (label) label.textContent = 'Preparing auto jailbreak...';
+    setTimeout(function () {
+      pageReadyForAuto = true;
+      autoStarted = false;
+      jailbreakCountdown();
+    }, AUTO_SETTLE_DELAY_MS);
+    return;
+  }
+
   let countdown = 5;
 
   if (label) {
@@ -227,7 +239,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   setAutoJbEnabled(autoJbValue);
 
-  if (autoJbValue) {
-    jailbreakCountdown();
-  }
+  // Give the PS4 browser a little time to finish loading/caching the page
+  // before starting the memory-sensitive exploit automatically.
+  setTimeout(function () {
+    pageReadyForAuto = true;
+    if (autoJbValue && !exploitUiRunning) {
+      autoStarted = false;
+      jailbreakCountdown();
+    }
+  }, AUTO_SETTLE_DELAY_MS);
 });
