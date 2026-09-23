@@ -332,68 +332,73 @@ async function setup() {
 function cleanup() {
   logger.info("Environment cleanup started...");
 
-  if (uaf_sock !== 0) {
-    if (fn.close.invoke(uaf_sock) === -1) {
-      throw new SyscallError(`Unable to close fd ${uaf_sock} !!`);
+  const closeFd = (fd) => {
+    if (fd === undefined || fd === null || fd === 0) {
+      return;
     }
 
-    uaf_sock = 0;
+    if (fn.close.invoke(fd) === -1) {
+      logger.debug(`Unable to close fd ${fd} during cleanup.`);
+    }
+  };
+
+  closeFd(uaf_sock);
+  uaf_sock = 0;
+
+  for (let i = 0; i < iov_ss.length; i++) {
+    closeFd(iov_ss[i]);
+    iov_ss[i] = 0;
   }
 
-  for (const sock of iov_ss) {
-    if (sock === 0) {
-      continue;
-    }
-
-    if (fn.close.invoke(sock) === -1) {
-      throw new SyscallError(`Unable to close fd ${sock} !!`);
-    }
+  for (let i = 0; i < uio_ss.length; i++) {
+    closeFd(uio_ss[i]);
+    uio_ss[i] = 0;
   }
 
-  for (const sock of uio_ss) {
-    if (sock === 0) {
-      continue;
-    }
-
-    if (fn.close.invoke(sock) === -1) {
-      throw new SyscallError(`Unable to close fd ${sock} !!`);
-    }
+  for (let i = 0; i < ipv6_socks.length; i++) {
+    closeFd(ipv6_socks[i]);
+    ipv6_socks[i] = 0;
   }
 
-  for (const sock of ipv6_socks) {
-    if (sock === 0) {
-      continue;
-    }
-
-    if (fn.close.invoke(sock) === -1) {
-      throw new SyscallError(`Unable to close fd ${sock} !!`);
-    }
+  try {
+    free_karw_pipe();
+  } catch (e) {
+    logger.debug(`Kernel ARW pipe cleanup skipped: ${e.message}`);
   }
-
-  free_karw_pipe();
 
   stop_iov_workers();
   stop_uio_workers();
 
-  if (msg_iov !== undefined) {
+  if (msg_iov !== undefined && msg_iov.addr !== undefined) {
     mem.free(msg_iov.addr);
   }
-  if (msg_uio !== undefined) {
+  if (msg_uio !== undefined && msg_uio.addr !== undefined) {
     mem.free(msg_uio.addr);
   }
-  if (msg !== undefined) {
+  if (msg !== undefined && msg.addr !== undefined) {
     mem.free(msg.addr);
   }
-  if (tmp !== undefined) {
+  if (tmp !== undefined && tmp.addr !== undefined) {
     mem.free(tmp.addr);
   }
 
-  mem.free(spray_rthdr0_addr);
-  mem.free(leak_rthdr0_addr);
+  if (spray_rthdr0_addr !== undefined) {
+    mem.free(spray_rthdr0_addr);
+    spray_rthdr0_addr = undefined;
+  }
+
+  if (leak_rthdr0_addr !== undefined) {
+    mem.free(leak_rthdr0_addr);
+    leak_rthdr0_addr = undefined;
+  }
+
+  msg = undefined;
+  msg_iov = undefined;
+  msg_uio = undefined;
+  tmp = undefined;
 
   logger.info("Environment cleanup completed !!");
 }
-
 async function ucred_triple_free() {
   logger.info("Ucred double free started...");
 

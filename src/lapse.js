@@ -380,67 +380,84 @@ function init() {
 function cleanup() {
   logger.info("Environment cleanup started...");
 
-  for (const sock of block_ss) {
-    if (sock === 0) {
-      continue;
+  // Only close descriptors that were actually created.
+  // Arrays are allocated with `undefined` entries until init/setup fills them.
+  const closeFd = (fd) => {
+    if (fd === undefined || fd === null || fd === 0) {
+      return;
     }
 
-    if (fn.close.invoke(sock) === -1) {
-      throw new SyscallError(`Unable to close fd ${sock} !!`);
+    if (fn.close.invoke(fd) === -1) {
+      logger.debug(`Unable to close fd ${fd} during cleanup.`);
     }
+  };
+
+  for (let i = 0; i < block_ss.length; i++) {
+    closeFd(block_ss[i]);
+    block_ss[i] = 0;
   }
 
   if (spray_ids.some((v) => v !== 0)) {
-    process_aio(AIO_OP_POLL | AIO_OP_DELETE, spray_ids);
+    try {
+      process_aio(AIO_OP_POLL | AIO_OP_DELETE, spray_ids);
+    } catch (e) {
+      logger.debug(`AIO spray cleanup skipped: ${e.message}`);
+    }
     spray_ids.fill(0);
   }
 
-  if (block_id !== 0) {
-    const block_ids = new Uint32Array([block_id]);
-    process_aio(AIO_OP_WAIT | AIO_OP_DELETE, block_ids);
+  if (block_id !== undefined && block_id !== null && block_id !== 0) {
+    try {
+      const block_ids = new Uint32Array([block_id]);
+      process_aio(AIO_OP_WAIT | AIO_OP_DELETE, block_ids);
+    } catch (e) {
+      logger.debug(`AIO block cleanup skipped: ${e.message}`);
+    }
+    block_id = 0;
   }
 
-  for (const sock of ipv6_socks) {
-    if (sock === 0) {
-      continue;
-    }
-
-    if (fn.close.invoke(sock) === -1) {
-      throw new SyscallError(`Unable to close fd ${sock} !!`);
-    }
+  for (let i = 0; i < ipv6_socks.length; i++) {
+    closeFd(ipv6_socks[i]);
+    ipv6_socks[i] = 0;
   }
 
-  for (const sock of pktopts_twins) {
-    if (sock === 0) {
-      continue;
-    }
-
-    if (fn.close.invoke(sock) === -1) {
-      throw new SyscallError(`Unable to close fd ${sock} !!`);
-    }
+  for (let i = 0; i < pktopts_twins.length; i++) {
+    closeFd(pktopts_twins[i]);
+    pktopts_twins[i] = 0;
   }
 
-  for (const sock of rthdr_twins) {
-    if (sock === 0) {
-      continue;
-    }
-
-    if (fn.close.invoke(sock) === -1) {
-      throw new SyscallError(`Unable to close fd ${sock} !!`);
-    }
+  for (let i = 0; i < rthdr_twins.length; i++) {
+    closeFd(rthdr_twins[i]);
+    rthdr_twins[i] = 0;
   }
 
-  free_karw_pipe();
+  try {
+    free_karw_pipe();
+  } catch (e) {
+    logger.debug(`Kernel ARW pipe cleanup skipped: ${e.message}`);
+  }
 
   stop_race_worker();
 
-  mem.free(spray_rthdr0_addr);
-  mem.free(leak_rthdr0_addr);
-  mem.free(reqs1.addr);
+  if (spray_rthdr0_addr !== undefined) {
+    mem.free(spray_rthdr0_addr);
+    spray_rthdr0_addr = undefined;
+  }
+
+  if (leak_rthdr0_addr !== undefined) {
+    mem.free(leak_rthdr0_addr);
+    leak_rthdr0_addr = undefined;
+  }
+
+  if (reqs1_addr !== undefined) {
+    mem.free(reqs1_addr);
+    reqs1_addr = undefined;
+  }
+
+  reqs1 = undefined;
 
   logger.info("Environment cleanup completed !!");
 }
-
 async function setup() {
   logger.info("Environment setup started...");
 

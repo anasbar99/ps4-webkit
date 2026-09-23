@@ -1,8 +1,6 @@
 let timerId = null;
-
-/* =====================================================
-   UI ELEMENTS
-   ===================================================== */
+let autoStarted = false;
+let exploitUiRunning = false;
 
 const label = document.getElementById('autoJbLabel');
 const checkbox = document.getElementById('autoJbInput');
@@ -13,13 +11,10 @@ const statusElement = document.getElementById('exploit-status');
 const kexForm = document.getElementById('kernel-options');
 const netctrlRadio = document.getElementById('netctrl-exploit');
 const lapseRadio = document.getElementById('lapse-exploit');
-/* =====================================================
-   STATUS
-   ===================================================== */
+
 function setExploitStatus(status) {
-  if (!statusElement) {
-    return;
-  }
+  if (!statusElement) return;
+
   statusElement.className = 'status';
   if (status === 'running') {
     statusElement.className += ' running';
@@ -34,216 +29,116 @@ function setExploitStatus(status) {
 }
 
 function getSelectedExploit() {
-  if (netctrlRadio && netctrlRadio.checked) {
-    return 'netctrl';
-  }
-  if (lapseRadio && lapseRadio.checked) {
-    return 'lapse';
-  }
+  if (netctrlRadio && netctrlRadio.checked) return 'netctrl';
+  if (lapseRadio && lapseRadio.checked) return 'lapse';
   return 'lapse';
 }
 
-if (kexForm) {
-  kexForm.addEventListener('change', function (event) {
-    if (!event.target || event.target.name !== 'kernel') {
-      return;
-    }
+let exploitChain = localStorage.getItem('exploitChain') || 'lapse';
 
-    exploitChain = event.target.value;
-    localStorage.setItem('exploitChain', exploitChain);
-  });
+if (exploitChain !== 'lapse' && exploitChain !== 'netctrl') {
+  exploitChain = 'lapse';
+  localStorage.setItem('exploitChain', exploitChain);
 }
 
-/* Make available to main.js if needed */
-window.setExploitStatus = setExploitStatus;
-/* =====================================================
-   AUTO JAILBREAK STORAGE
-   ===================================================== */
-const storedAutoJb = localStorage.getItem('autoJb');
-let autoJbValue = storedAutoJb !== null ? storedAutoJb === 'true' : true;
-/* =====================================================
-   EXPLOIT CHAIN
-   ===================================================== */
-let exploitChain = localStorage.getItem('exploitChain') || 'lapse';
-/* =====================================================
-   USER AGENT
-   ===================================================== */
-/*
- * The original exploit expects #UA to exist.
- * We keep it hidden because the new UI does not
- * display the browser user-agent.
- */
 if (UAElement) {
   UAElement.innerText = navigator.userAgent;
 }
 
-// Pastikan hanya exploit yang tersedia yang bisa dipilih
-if (exploitChain !== 'lapse' && exploitChain !== 'netctrl') {
-  exploitChain = 'lapse';
-  localStorage.setItem('exploitChain', exploitChain);
-}
-
 function updateKernelUI() {
-  const options = kexForm.querySelectorAll('.kernel-option');
+  if (!kexForm) return;
 
+  const options = kexForm.querySelectorAll('.kernel-option');
   options.forEach(function (option) {
     const radio = option.querySelector('input[name="kernel"]');
-
-    if (radio && radio.checked) {
-      option.classList.add('active');
-    } else {
-      option.classList.remove('active');
-    }
+    option.classList.toggle('active', !!(radio && radio.checked));
   });
 }
 
-if (kexForm) {
-  kexForm.addEventListener('change', function (event) {
-    if (!event.target || event.target.name !== 'kernel') {
-      return;
-    }
+function setAutoJbEnabled(enabled) {
+  if (!checkbox) return;
 
-    const selected = event.target.value;
-
-    if (selected !== 'lapse' && selected !== 'netctrl') {
-      return;
-    }
-
-    exploitChain = selected;
-
-    localStorage.setItem('exploitChain', exploitChain);
-
-    updateKernelUI();
-
-    console.log('Selected exploit:', exploitChain);
-  });
+  checkbox.checked = enabled;
+  if (autoJbContainer) {
+    autoJbContainer.classList.toggle('auto-enabled', enabled);
+  }
 }
-
-// Pastikan hanya exploit yang tersedia yang bisa dipilih
-if (exploitChain !== 'lapse' && exploitChain !== 'netctrl') {
-  exploitChain = 'lapse';
-  localStorage.setItem('exploitChain', exploitChain);
-}
-
-function updateKernelUI() {
-  const options = kexForm.querySelectorAll('.kernel-option');
-
-  options.forEach(function (option) {
-    const radio = option.querySelector('input[name="kernel"]');
-
-    if (radio && radio.checked) {
-      option.classList.add('active');
-    } else {
-      option.classList.remove('active');
-    }
-  });
-}
-
-if (kexForm) {
-  kexForm.addEventListener('change', function (event) {
-    if (!event.target || event.target.name !== 'kernel') {
-      return;
-    }
-
-    const selected = event.target.value;
-
-    if (selected !== 'lapse' && selected !== 'netctrl') {
-      return;
-    }
-
-    exploitChain = selected;
-
-    localStorage.setItem('exploitChain', exploitChain);
-
-    updateKernelUI();
-
-    console.log('Selected exploit:', exploitChain);
-  });
-}
-
-/* =====================================================
-   JAILBREAK BUTTON
-   ===================================================== */
-
-if (jeilbrekBtn) {
-  jeilbrekBtn.addEventListener('click', function () {
-    jeilbrekBtn.disabled = true;
-    stopInterval();
-    setExploitStatus('running');
-    /*
-     * This calls the ORIGINAL exploit.
-     *
-     * doJb() comes from src/main.js
-     */
-    try {
-      const result = doJb();
-
-      /*
-       * If doJb returns a Promise,
-       * detect completion.
-       */
-      if (result && typeof result.then === 'function') {
-        result.then(
-          function () {
-            setExploitStatus('done');
-          },
-          function () {
-            setExploitStatus('ready');
-            jeilbrekBtn.disabled = false;
-          },
-        );
-      }
-    } catch (error) {
-      setExploitStatus('ready');
-      jeilbrekBtn.disabled = false;
-      console.error(error);
-    }
-  });
-}
-
-/* =====================================================
-   AUTO JAILBREAK
-   ===================================================== */
-if (checkbox) {
-  checkbox.addEventListener('change', function () {
-    localStorage.setItem('autoJb', checkbox.checked);
-
-    // Update warna teks
-    updateAutoJbUI();
-
-    if (checkbox.checked === true && jeilbrekBtn && jeilbrekBtn.disabled === false) {
-      jailbreakCountdown();
-      return;
-    }
-
-    stopInterval();
-  });
-}
-function updateAutoJbUI() {
-  if (!checkbox || !autoJbContainer) return;
-
-  autoJbContainer.classList.toggle('auto-enabled', checkbox.checked);
-}
-/* =====================================================
-   STOP COUNTDOWN
-   ===================================================== */
 
 function stopInterval() {
   if (timerId !== null) {
     clearInterval(timerId);
     timerId = null;
   }
+
   if (label) {
     label.textContent = 'Auto Jailbreak';
   }
 }
 
-/* =====================================================
-   AUTO JAILBREAK COUNTDOWN
-   ===================================================== */
+async function runJailbreak(source) {
+  if (exploitUiRunning) {
+    return;
+  }
+
+  exploitUiRunning = true;
+  stopInterval();
+
+  if (jeilbrekBtn) {
+    jeilbrekBtn.disabled = true;
+  }
+
+  if (label && source === 'auto') {
+    label.textContent = 'Executing';
+  }
+
+  setExploitStatus('running');
+
+  try {
+    const result = await doJb();
+
+    if (result === true) {
+      setExploitStatus('done');
+      return;
+    }
+
+    setExploitStatus('ready');
+  } catch (error) {
+    console.error('Jailbreak failed:', error);
+
+    setExploitStatus('ready');
+
+    /*
+     * A failed kernel/WebKit exploit should not immediately be retried
+     * from the same page. Repeated automatic attempts can leave the
+     * browser process under memory pressure.
+     */
+    if (source === 'auto') {
+      setAutoJbEnabled(false);
+      localStorage.setItem('autoJb', 'false');
+
+      if (label) {
+        label.textContent = 'Auto Jailbreak failed';
+      }
+    }
+  } finally {
+    exploitUiRunning = false;
+
+    /*
+     * Keep the manual button disabled after a failed automatic attempt.
+     * Reloading the browser creates a clean WebKit context.
+     */
+    if (jeilbrekBtn && source !== 'auto') {
+      jeilbrekBtn.disabled = false;
+    }
+  }
+}
 
 function jailbreakCountdown() {
+  if (autoStarted || exploitUiRunning) return;
+
+  autoStarted = true;
   stopInterval();
+
   let countdown = 5;
 
   if (label) {
@@ -252,82 +147,79 @@ function jailbreakCountdown() {
 
   timerId = setInterval(function () {
     countdown--;
-    if (label) {
-      label.textContent = 'Auto Jailbreaking in: ' + countdown;
-    }
-    if (countdown < 0) {
-      if (jeilbrekBtn) {
-        jeilbrekBtn.disabled = true;
-      }
-      clearInterval(timerId);
-      timerId = null;
+
+    if (countdown > 0) {
       if (label) {
-        label.textContent = 'Executing';
+        label.textContent = 'Auto Jailbreaking in: ' + countdown;
       }
-      setExploitStatus('running');
-      try {
-        const result = doJb();
-        if (result && typeof result.then === 'function') {
-          result.then(
-            function () {
-              setExploitStatus('done');
-            },
-            function () {
-              setExploitStatus('ready');
-            },
-          );
-        }
-      } catch (error) {
-        setExploitStatus('ready');
-      }
+      return;
     }
+
+    stopInterval();
+    if (label) {
+      label.textContent = 'Executing';
+    }
+
+    runJailbreak('auto');
   }, 1000);
 }
 
-/* =====================================================
-   APPLICATION CACHE
-   ===================================================== */
+if (kexForm) {
+  kexForm.addEventListener('change', function (event) {
+    if (!event.target || event.target.name !== 'kernel') return;
 
-function cacheProgress(e) {
-  if (!e || !e.total) {
-    return;
-  }
-  const percent = Math.round((e.loaded / e.total) * 100);
-  document.title = 'Caching: ' + percent + '%';
-}
-function displayCacheProgress() {
-  setTimeout(function () {
-    document.title = '✓';
-  }, 1000);
-  setTimeout(function () {
-    document.title = 'PS4 Jailbreak by Sanchezz';
-  }, 3000);
+    const selected = event.target.value;
+    if (selected !== 'lapse' && selected !== 'netctrl') return;
+
+    exploitChain = selected;
+    localStorage.setItem('exploitChain', exploitChain);
+    updateKernelUI();
+  });
 }
 
-/* =====================================================
-   INITIALIZATION
-   ===================================================== */
+if (jeilbrekBtn) {
+  jeilbrekBtn.addEventListener('click', function () {
+    runJailbreak('manual');
+  });
+}
+
+if (checkbox) {
+  checkbox.addEventListener('change', function () {
+    const enabled = checkbox.checked;
+    localStorage.setItem('autoJb', String(enabled));
+    updateAutoJbUI();
+
+    if (enabled) {
+      autoStarted = false;
+      jailbreakCountdown();
+    } else {
+      stopInterval();
+    }
+  });
+}
+
+function updateAutoJbUI() {
+  if (!checkbox || !autoJbContainer) return;
+  autoJbContainer.classList.toggle('auto-enabled', checkbox.checked);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-  // =================================================
-  // RESTORE EXPLOIT SELECTION
-  // =================================================
-
   if (exploitChain === 'netctrl') {
-    netctrlRadio.checked = true;
+    if (netctrlRadio) netctrlRadio.checked = true;
   } else {
-    lapseRadio.checked = true;
+    if (lapseRadio) lapseRadio.checked = true;
   }
 
   updateKernelUI();
 
-  // =================================================
-  // AUTO JAILBREAK
-  // =================================================
+  /*
+   * Keep the user's preference, but auto mode is one-shot per page load.
+   * It is never started more than once by duplicate DOM events.
+   */
+  const storedAutoJb = localStorage.getItem('autoJb');
+  const autoJbValue = storedAutoJb !== null ? storedAutoJb === 'true' : true;
 
-  if (checkbox) {
-    checkbox.checked = autoJbValue;
-    updateAutoJbUI();
-  }
+  setAutoJbEnabled(autoJbValue);
 
   if (autoJbValue) {
     jailbreakCountdown();
