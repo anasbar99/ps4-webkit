@@ -32,6 +32,28 @@ function setExploitStatus(status) {
     statusElement.textContent = 'ON';
   }
 }
+
+function getSelectedExploit() {
+  if (netctrlRadio && netctrlRadio.checked) {
+    return 'netctrl';
+  }
+  if (lapseRadio && lapseRadio.checked) {
+    return 'lapse';
+  }
+  return 'lapse';
+}
+
+if (kexForm) {
+  kexForm.addEventListener('change', function (event) {
+    if (!event.target || event.target.name !== 'kernel') {
+      return;
+    }
+
+    exploitChain = event.target.value;
+    localStorage.setItem('exploitChain', exploitChain);
+  });
+}
+
 /* Make available to main.js if needed */
 window.setExploitStatus = setExploitStatus;
 /* =====================================================
@@ -46,7 +68,6 @@ let exploitChain = localStorage.getItem('exploitChain') || 'lapse';
 /* =====================================================
    USER AGENT
    ===================================================== */
-
 /*
  * The original exploit expects #UA to exist.
  * We keep it hidden because the new UI does not

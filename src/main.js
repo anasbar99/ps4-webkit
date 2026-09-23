@@ -1,6 +1,6 @@
 function load_script(src, remote = true, transfer = []) {
   return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
+    const script = document.createElement('script');
     script.src = src;
     script.onload = resolve;
     script.onerror = reject;
@@ -9,14 +9,16 @@ function load_script(src, remote = true, transfer = []) {
 }
 
 async function doJb() {
-  await load_script("src/misc.js");
+  exploitChain = getSelectedExploit();
+  localStorage.setItem('exploitChain', exploitChain);
+  await load_script('src/misc.js');
 
   try {
     version.init();
     switch (version.console) {
       case 4:
-        await load_script("src/ps4/constants.js");
-        await load_script("src/ps4/userland.js");
+        await load_script('src/ps4/constants.js');
+        await load_script('src/ps4/userland.js');
         break;
       case 5:
         //TODO
@@ -25,7 +27,7 @@ async function doJb() {
         logger.info(`Unsupported console ${version.console}`);
     }
 
-    logger.info("===USERLAND===");
+    logger.info('===USERLAND===');
 
     let rw = undefined;
     if (arw.master === undefined) {
@@ -36,14 +38,14 @@ async function doJb() {
     init_rop();
     init_syscalls();
 
-    logger.info("===END===");
+    logger.info('===END===');
 
-    await load_script("src/loader.js");
-    await load_script("src/workers.js");
+    await load_script('src/loader.js');
+    await load_script('src/workers.js');
 
     switch (version.console) {
       case 4:
-        await load_script("src/ps4/kernel.js");
+        await load_script('src/ps4/kernel.js');
         break;
       case 5:
         //TODO
@@ -53,11 +55,9 @@ async function doJb() {
     }
 
     await load_script(`src/${exploitChain}.js`);
-
     logger.info(`===${exploitChain.toUpperCase()}===`);
-
     try {
-      if (exploitChain == "lapse") {
+      if (exploitChain == 'lapse') {
         init();
         await setup();
         await double_free_reqs2();
@@ -68,7 +68,7 @@ async function doJb() {
         // Increase reference counts for the pipes
         inc_karw_pipe_refcnt();
 
-        logger.info("Corrupted context cleanup started...");
+        logger.info('Corrupted context cleanup started...');
 
         // Remove pktinfo pointers
         remove_pktinfo_from_so(pktopts_twins[0]);
@@ -77,7 +77,7 @@ async function doJb() {
         remove_rthdr_from_so(pktopts_twins[1]);
         remove_rthdr_from_so(rthdr_twins[0]);
 
-        logger.info("Corrupted context cleanup completed !!");
+        logger.info('Corrupted context cleanup completed !!');
       } else {
         init();
         await setup();
@@ -87,7 +87,7 @@ async function doJb() {
 
         inc_karw_pipe_refcnt();
 
-        logger.info("Corrupted context cleanup started...");
+        logger.info('Corrupted context cleanup started...');
 
         // Remove rthdr pointers from triplets
         for (let i = 0; i < triplets.length; i++) {
@@ -97,7 +97,7 @@ async function doJb() {
         // Remove triple freed file from free list
         remove_uaf_file();
 
-        logger.info("Corrupted context cleanup completed !!");
+        logger.info('Corrupted context cleanup completed !!');
       }
     } finally {
       cleanup();
@@ -115,14 +115,14 @@ async function doJb() {
 
       kernel_patches(kpatches_u8);
 
-      const bin_rsp = await fetch("src/payload.bin");
+      const bin_rsp = await fetch('src/payload.bin');
       const bin_buf = await bin_rsp.arrayBuffer();
       const bin_u8 = new Uint8Array(bin_buf);
 
       load_bin(bin_u8);
     }
 
-    logger.info("===END===");
+    logger.info('===END===');
   } catch (e) {
     logger.error(e.message);
     logger.error(e.stack);
