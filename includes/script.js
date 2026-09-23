@@ -119,6 +119,12 @@ async function runJailbreak(source) {
       if (label) {
         label.textContent = 'Auto Jailbreak failed';
       }
+
+      // Do not leave the manual button locked after an automatic failure.
+      // The user can retry manually after the failed attempt.
+      if (jeilbrekBtn) {
+        jeilbrekBtn.disabled = false;
+      }
     }
   } finally {
     exploitUiRunning = false;
@@ -127,7 +133,7 @@ async function runJailbreak(source) {
      * Keep the manual button disabled after a failed automatic attempt.
      * Reloading the browser creates a clean WebKit context.
      */
-    if (jeilbrekBtn && source !== 'auto') {
+    if (jeilbrekBtn) {
       jeilbrekBtn.disabled = false;
     }
   }

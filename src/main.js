@@ -1,3 +1,13 @@
+function load_script(src, remote = true, transfer = []) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
 let jailbreakRunning = false;
 
 async function doJb() {
