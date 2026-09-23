@@ -1,48 +1,45 @@
-/* @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&display=swap'); */
 @font-face {
   font-family: 'Orbitron';
-  src: url('./fonts/Orbitron-Regular.ttf') format('truetype');
+  src: url('fonts/Orbitron-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
-
 @font-face {
   font-family: 'Orbitron';
-  src: url('./fonts/Orbitron-Medium.ttf') format('truetype');
+  src: url('fonts/Orbitron-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
+  font-display: swap;
 }
-
 @font-face {
   font-family: 'Orbitron';
-  src: url('./fonts/Orbitron-SemiBold.ttf') format('truetype');
+  src: url('fonts/Orbitron-SemiBold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
+  font-display: swap;
 }
-
 @font-face {
   font-family: 'Orbitron';
-  src: url('./fonts/Orbitron-Bold.ttf') format('truetype');
+  src: url('fonts/Orbitron-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
+  font-display: swap;
 }
-
 @font-face {
   font-family: 'Orbitron';
-  src: url('./fonts/Orbitron-ExtraBold.ttf') format('truetype');
+  src: url('fonts/Orbitron-ExtraBold.ttf') format('truetype');
   font-weight: 800;
   font-style: normal;
+  font-display: swap;
 }
-
 @font-face {
   font-family: 'Orbitron';
-  src: url('./fonts/Orbitron-Black.ttf') format('truetype');
+  src: url('fonts/Orbitron-Black.ttf') format('truetype');
   font-weight: 900;
   font-style: normal;
+  font-display: swap;
 }
-/* =========================================================
-   RESET
-   ========================================================= */
 
 * {
   box-sizing: border-box;
@@ -199,7 +196,7 @@ body {
   margin-top: 4px;
   color: rgba(255, 255, 255, 0.85);
   font-family: 'Orbitron', Arial, sans-serif;
-  font-size: 20px;
+  font-size: 15px;
   font-style: italic;
   line-height: 1.2;
   text-shadow: 0 2px 7px rgba(0, 0, 0, 0.95);
@@ -236,7 +233,7 @@ body {
   background: rgba(5, 15, 25, 0.72);
   color: rgba(220, 230, 240, 0.72);
   font-family: Arial, sans-serif;
-  font-size: 10px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition:
@@ -293,7 +290,6 @@ body {
   width: 100%;
   /*
         INI KUNCI UTAMA.
-
         Console mengambil seluruh ruang kosong
         yang tersisa di panel.
     */
@@ -305,7 +301,7 @@ body {
   border: 1px solid rgba(40, 130, 200, 0.7);
   border-radius: 8px;
   overflow: hidden;
-  background: rgba(0, 5, 9, 0.9);
+  background-color: rgba(255, 0, 242, 0.829);
   box-shadow:
     0 8px 30px rgba(0, 0, 0, 0.35),
     inset 0 0 30px rgba(0, 0, 0, 0.45);
@@ -339,6 +335,7 @@ body {
   font-size: 17px;
   font-weight: 900;
   white-space: nowrap;
+  margin-right: 3px;
 }
 
 .console-title div {
@@ -351,7 +348,7 @@ body {
 .console-title strong {
   color: #ffffff;
   font-family: 'Orbitron', Arial, sans-serif;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.7px;
   line-height: 1.3;
@@ -361,7 +358,7 @@ body {
   margin-top: 2px;
   color: rgba(150, 175, 200, 0.65);
   font-family: Arial, sans-serif;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1;
 }
 
@@ -529,7 +526,7 @@ body {
   display: block;
   color: #ffffff;
   font-family: Arial, sans-serif;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1.2;
 }
@@ -537,16 +534,19 @@ body {
 .auto-description {
   display: block;
   margin-top: 2px;
-  color: rgba(150, 175, 200, 0.65);
+  color: #ff8500;
   font-family: Arial, sans-serif;
-  font-size: 13px;
+  font-size: 11px;
   line-height: 1.1;
+  transition: color 0.2s ease;
+}
+.auto-jailbreak.auto-enabled .auto-description {
+  color: #35d66f;
 }
 .bolt2 {
   width: 30px !important;
   margin: 2px 10px;
-  text-shadow: 0 0 8px rgba(255, 130, 0, 0.45);
-  box-shadow: 0 0 8px rgba(255, 34, 89, 0.45);
+  text-shadow: 0 0 8px rgba(0, 119, 255, 0.45);
   padding: 2px 2px;
   border-radius: 5px;
 }
@@ -561,11 +561,9 @@ body {
   width: 1px;
   height: 1px;
 }
-
 /* =========================================================
    TOGGLE
    ========================================================= */
-
 .toggle {
   position: relative;
   width: 39px;

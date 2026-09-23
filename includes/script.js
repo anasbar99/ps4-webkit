@@ -5,65 +5,44 @@ let timerId = null;
    ===================================================== */
 
 const label = document.getElementById('autoJbLabel');
-
 const checkbox = document.getElementById('autoJbInput');
-
+const autoJbContainer = checkbox ? checkbox.closest('.auto-jailbreak') : null;
 const jeilbrekBtn = document.getElementById('jeilbrek');
-
 const UAElement = document.getElementById('UA');
-
 const statusElement = document.getElementById('exploit-status');
-
 const kexForm = document.getElementById('kernel-options');
-
 const netctrlRadio = document.getElementById('netctrl-exploit');
-
 const lapseRadio = document.getElementById('lapse-exploit');
-
 /* =====================================================
    STATUS
    ===================================================== */
-
 function setExploitStatus(status) {
   if (!statusElement) {
     return;
   }
-
   statusElement.className = 'status';
-
   if (status === 'running') {
     statusElement.className += ' running';
-
     statusElement.textContent = 'BERJALAN';
   } else if (status === 'done') {
     statusElement.className += ' done';
-
     statusElement.textContent = 'SELESAI';
   } else {
     statusElement.className += ' ready';
-
-    statusElement.textContent = 'SIAP!!!';
+    statusElement.textContent = 'ON';
   }
 }
-
 /* Make available to main.js if needed */
-
 window.setExploitStatus = setExploitStatus;
-
 /* =====================================================
    AUTO JAILBREAK STORAGE
    ===================================================== */
-
 const storedAutoJb = localStorage.getItem('autoJb');
-
 let autoJbValue = storedAutoJb !== null ? storedAutoJb === 'true' : true;
-
 /* =====================================================
    EXPLOIT CHAIN
    ===================================================== */
-
 let exploitChain = localStorage.getItem('exploitChain') || 'lapse';
-
 /* =====================================================
    USER AGENT
    ===================================================== */
@@ -73,14 +52,29 @@ let exploitChain = localStorage.getItem('exploitChain') || 'lapse';
  * We keep it hidden because the new UI does not
  * display the browser user-agent.
  */
-
 if (UAElement) {
   UAElement.innerText = navigator.userAgent;
 }
 
-/* =====================================================
-   KERNEL SELECTION
-   ===================================================== */
+// Pastikan hanya exploit yang tersedia yang bisa dipilih
+if (exploitChain !== 'lapse' && exploitChain !== 'netctrl') {
+  exploitChain = 'lapse';
+  localStorage.setItem('exploitChain', exploitChain);
+}
+
+function updateKernelUI() {
+  const options = kexForm.querySelectorAll('.kernel-option');
+
+  options.forEach(function (option) {
+    const radio = option.querySelector('input[name="kernel"]');
+
+    if (radio && radio.checked) {
+      option.classList.add('active');
+    } else {
+      option.classList.remove('active');
+    }
+  });
+}
 
 if (kexForm) {
   kexForm.addEventListener('change', function (event) {
@@ -88,9 +82,61 @@ if (kexForm) {
       return;
     }
 
-    exploitChain = event.target.value;
+    const selected = event.target.value;
+
+    if (selected !== 'lapse' && selected !== 'netctrl') {
+      return;
+    }
+
+    exploitChain = selected;
 
     localStorage.setItem('exploitChain', exploitChain);
+
+    updateKernelUI();
+
+    console.log('Selected exploit:', exploitChain);
+  });
+}
+
+// Pastikan hanya exploit yang tersedia yang bisa dipilih
+if (exploitChain !== 'lapse' && exploitChain !== 'netctrl') {
+  exploitChain = 'lapse';
+  localStorage.setItem('exploitChain', exploitChain);
+}
+
+function updateKernelUI() {
+  const options = kexForm.querySelectorAll('.kernel-option');
+
+  options.forEach(function (option) {
+    const radio = option.querySelector('input[name="kernel"]');
+
+    if (radio && radio.checked) {
+      option.classList.add('active');
+    } else {
+      option.classList.remove('active');
+    }
+  });
+}
+
+if (kexForm) {
+  kexForm.addEventListener('change', function (event) {
+    if (!event.target || event.target.name !== 'kernel') {
+      return;
+    }
+
+    const selected = event.target.value;
+
+    if (selected !== 'lapse' && selected !== 'netctrl') {
+      return;
+    }
+
+    exploitChain = selected;
+
+    localStorage.setItem('exploitChain', exploitChain);
+
+    updateKernelUI();
+
+    console.log('Selected exploit:', exploitChain);
   });
 }
 
@@ -101,17 +147,13 @@ if (kexForm) {
 if (jeilbrekBtn) {
   jeilbrekBtn.addEventListener('click', function () {
     jeilbrekBtn.disabled = true;
-
     stopInterval();
-
     setExploitStatus('running');
-
     /*
      * This calls the ORIGINAL exploit.
      *
      * doJb() comes from src/main.js
      */
-
     try {
       const result = doJb();
 
@@ -119,7 +161,6 @@ if (jeilbrekBtn) {
        * If doJb returns a Promise,
        * detect completion.
        */
-
       if (result && typeof result.then === 'function') {
         result.then(
           function () {
@@ -127,16 +168,13 @@ if (jeilbrekBtn) {
           },
           function () {
             setExploitStatus('ready');
-
             jeilbrekBtn.disabled = false;
           },
         );
       }
     } catch (error) {
       setExploitStatus('ready');
-
       jeilbrekBtn.disabled = false;
-
       console.error(error);
     }
   });
@@ -145,21 +183,26 @@ if (jeilbrekBtn) {
 /* =====================================================
    AUTO JAILBREAK
    ===================================================== */
-
 if (checkbox) {
   checkbox.addEventListener('change', function () {
     localStorage.setItem('autoJb', checkbox.checked);
 
+    // Update warna teks
+    updateAutoJbUI();
+
     if (checkbox.checked === true && jeilbrekBtn && jeilbrekBtn.disabled === false) {
       jailbreakCountdown();
-
       return;
     }
 
     stopInterval();
   });
 }
+function updateAutoJbUI() {
+  if (!checkbox || !autoJbContainer) return;
 
+  autoJbContainer.classList.toggle('auto-enabled', checkbox.checked);
+}
 /* =====================================================
    STOP COUNTDOWN
    ===================================================== */
@@ -167,10 +210,8 @@ if (checkbox) {
 function stopInterval() {
   if (timerId !== null) {
     clearInterval(timerId);
-
     timerId = null;
   }
-
   if (label) {
     label.textContent = 'Auto Jailbreak';
   }
@@ -182,7 +223,6 @@ function stopInterval() {
 
 function jailbreakCountdown() {
   stopInterval();
-
   let countdown = 5;
 
   if (label) {
@@ -191,29 +231,21 @@ function jailbreakCountdown() {
 
   timerId = setInterval(function () {
     countdown--;
-
     if (label) {
       label.textContent = 'Auto Jailbreaking in: ' + countdown;
     }
-
     if (countdown < 0) {
       if (jeilbrekBtn) {
         jeilbrekBtn.disabled = true;
       }
-
       clearInterval(timerId);
-
       timerId = null;
-
       if (label) {
         label.textContent = 'Executing';
       }
-
       setExploitStatus('running');
-
       try {
         const result = doJb();
-
         if (result && typeof result.then === 'function') {
           result.then(
             function () {
@@ -239,17 +271,13 @@ function cacheProgress(e) {
   if (!e || !e.total) {
     return;
   }
-
   const percent = Math.round((e.loaded / e.total) * 100);
-
   document.title = 'Caching: ' + percent + '%';
 }
-
 function displayCacheProgress() {
   setTimeout(function () {
     document.title = '✓';
   }, 1000);
-
   setTimeout(function () {
     document.title = 'PS4 Jailbreak by Sanchezz';
   }, 3000);
@@ -258,44 +286,27 @@ function displayCacheProgress() {
 /* =====================================================
    INITIALIZATION
    ===================================================== */
-
 document.addEventListener('DOMContentLoaded', function () {
-  /* Application Cache */
-
-  if (window.applicationCache) {
-    window.applicationCache.addEventListener('progress', cacheProgress, false);
-
-    window.applicationCache.oncached = function () {
-      displayCacheProgress();
-    };
-
-    window.applicationCache.onupdateready = function () {
-      displayCacheProgress();
-    };
-  }
-
-  /* Kernel */
+  // =================================================
+  // RESTORE EXPLOIT SELECTION
+  // =================================================
 
   if (exploitChain === 'netctrl') {
-    if (netctrlRadio) {
-      netctrlRadio.checked = true;
-    }
+    netctrlRadio.checked = true;
   } else {
-    if (lapseRadio) {
-      lapseRadio.checked = true;
-    }
+    lapseRadio.checked = true;
   }
 
-  /* Auto jailbreak */
+  updateKernelUI();
+
+  // =================================================
+  // AUTO JAILBREAK
+  // =================================================
 
   if (checkbox) {
     checkbox.checked = autoJbValue;
+    updateAutoJbUI();
   }
-
-  /*
-   * Preserve original behavior:
-   * Auto Jailbreak is enabled by default.
-   */
 
   if (autoJbValue) {
     jailbreakCountdown();
