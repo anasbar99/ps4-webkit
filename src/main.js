@@ -24,6 +24,10 @@ async function doJb() {
     await load_script('src/misc.js');
 
     version.init();
+    if (version.console !== 4 || version.major < 6 || version.major > 11 || (version.major === 11 && version.minor > 2)) {
+      throw new Error(`Unsupported PS4 firmware ${version}. Supported range is 6.00-11.02`);
+    }
+
     switch (version.console) {
       case 4:
         await load_script('src/ps4/constants.js');
@@ -115,11 +119,17 @@ async function doJb() {
       jailbreak();
 
       const kpatches_rsp = await fetch(`src/ps4/patches/${constants.KPATCH}`);
+      if (!kpatches_rsp.ok) {
+        throw new Error(`Unable to load kernel patch ${constants.KPATCH}: HTTP ${kpatches_rsp.status}`);
+      }
       const kpatches_buf = await kpatches_rsp.arrayBuffer();
       const kpatches_u8 = new Uint8Array(kpatches_buf);
       kernel_patches(kpatches_u8);
 
       const bin_rsp = await fetch('src/payload.bin');
+      if (!bin_rsp.ok) {
+        throw new Error(`Unable to load payload.bin: HTTP ${bin_rsp.status}`);
+      }
       const bin_buf = await bin_rsp.arrayBuffer();
       const bin_u8 = new Uint8Array(bin_buf);
       load_bin(bin_u8);
